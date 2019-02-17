@@ -46,10 +46,10 @@ def start_monitor():
         if temp_bitmex_sell_1 != bitmex_sell_1 or temp_bitmex_buy_1 != bitmex_buy_1 \
                 or temp_buy_2_price != buy_2_price or temp_sell_2_price != sell_2_price:
             strategy.receive_price_change(buy_2_price, sell_2_price)
-            print(datetime.datetime.now(), 'ws:('+str([bitmex_buy_1, bitmex_sell_1])+')',
+            print(datetime.datetime.now()[11:-3], 'ws:'+str([bitmex_buy_1, bitmex_sell_1]),
                   # 'web:'+str([bitmex_last_price, bitmex_sell_1, bitmex_buy_1]),
-                  'target卖买二:'+str([buy_2_price, sell_2_price]), position.get_target_position().value(),
-                  '耗时:', int((time.time() - start_time)*1000), int(ui_time*1000), int(data_time*1000))
+                  '买卖二:'+str([buy_2_price, sell_2_price]), position.get_target_position().value(),
+                  '耗时:', int((time.time() - start_time)*1000), bitmex_data.get_buy_1_list(), bitmex_data.get_sell_1_list())
 
         temp_bitmex_sell_1 = bitmex_sell_1
         temp_bitmex_buy_1 = bitmex_buy_1

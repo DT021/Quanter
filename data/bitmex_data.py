@@ -14,7 +14,7 @@ is_alive = True
 
 buy_1_list = []
 sell_1_list = []
-LIST_SIZE = 10
+LIST_SIZE = 5
 
 
 def get_quote_1():
