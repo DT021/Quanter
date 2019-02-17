@@ -34,6 +34,6 @@ def get_target_site_url(site, _id):
     if site == const.BBX:
         return 'https://swap.bbx.com/?id=' + str(_id)
     elif site == const.DERIBIT:
-        return ''
+        return 'https://www.deribit.com/main#/futures?tab=BTC-PERPETUAL'
     elif site == const.BIEX:
         return 'https://www.biex.com/contract/trade?exchangePair=' + get_biex_symbol(_id)

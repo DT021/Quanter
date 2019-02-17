@@ -25,5 +25,8 @@ BM_SECRET = ''
 BIEX_API_KEY = ''
 BIEX_SECRET = ''
 
+# deribit required
+DB_API_KEY = ''
+DB_SECRET = ''
 
 
