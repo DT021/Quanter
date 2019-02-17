@@ -6,6 +6,7 @@ import const, variable
 import time
 import requests
 import json
+import threading
 
 
 BASE_URL = 'https://api.bbxapp.vip/v1/ifcontract/'
@@ -45,7 +46,7 @@ class BbxApi(AbsApi):
                 position_result.amount = int(hold_vol) - int(freeze_vol)
                 _type = p['position_type']
                 position_result.side = const.BUY if _type == 1 else const.SELL
-                position_result._id = p['position_id']
+                position_result.position_id = p['position_id']
                 position_result.average_price = float(p['hold_avg_price'])
                 break
         return position_result
@@ -66,10 +67,14 @@ class BbxApi(AbsApi):
         print(response)
         time.sleep(0.15)
         user_position.set_target_position(self.get_user_position())
+        print(user_position.get_target_position().value())
         if response['message'] == 'Success':
             data = response['data']
             order_id = data['order_id']
             self.cancel_order(order_id)
+
+    def open_order_async(self, price, amount, side):
+        threading.Thread(target=self.open_order, args=(price, amount, side)).start()
 
     def close_order(self, price, amount, side, _id):
         time_stamp = time.time()
@@ -86,10 +91,14 @@ class BbxApi(AbsApi):
         print(response)
         time.sleep(0.15)
         user_position.set_target_position(self.get_user_position())
+        print(user_position.get_target_position().value())
         if response['message'] == 'Success':
             data = response['data']
             order_id = data['order_id']
             self.cancel_order(order_id)
+
+    def close_order_async(self, price, amount, side, _id):
+        threading.Thread(target=self.close_order, args=(price, amount, side, _id)).start()
 
     def cancel_order(self, order_id):
         time_stamp = time.time()
@@ -109,9 +118,9 @@ class BbxApi(AbsApi):
     def get_order_info(self, order_id): pass
 
 
-variable.CURRENT_ID = const.ETH
-variable.BBX_UID = '100055833945'
-variable.BBX_TOKEN = '615b8f2232a811e980ff0242ac120004'
-
-bbx = BbxApi()
-bbx.open_order(125, 1, const.BUY)
+# variable.CURRENT_ID = const.ETH
+# variable.BBX_UID = '100055833945'
+# variable.BBX_TOKEN = '615b8f2232a811e980ff0242ac120004'
+#
+# bbx = BbxApi()
+# bbx.open_order(125.5, 1, const.SELL)

@@ -30,14 +30,16 @@ class OldStrategy(AbsStrategy):
                 buy_1_amount = ui_data.get_buy_amount(1)
                 if buy_1_amount < 0:
                     buy_1_amount = 999999
-                api.get_site_api().close_order(const.SELL, buy_1_price, min(available_amount, buy_1_amount))
+                api.get_site_api().close_order_async(buy_1_price, min(available_amount, buy_1_amount),
+                                                     const.SELL, position.position_id)
         elif position.side == const.SELL:
             if (buy_1_price - self.bitmex_buy_1_price <= variable.CLOSE_THRESHOLD) \
                     and (sell_1_price - buy_1_price <= variable.CLOSE_DIFF):
                 sell_1_amount = ui_data.get_sell_amount(1)
                 if sell_1_amount < 0:
                     sell_1_amount = 999999
-                    api.get_site_api().close_order(const.BUY, sell_1_price, min(sell_1_amount, available_amount))
+                    api.get_site_api().close_order_async(sell_1_price, min(sell_1_amount, available_amount),
+                                                         const.BUY, position.position_id)
 
     def check_need_open(self, sell_2_price, buy_2_price):
         result = False
@@ -45,16 +47,16 @@ class OldStrategy(AbsStrategy):
         if self.bitmex_sell_1_price - sell_2_price >= variable.THRESHOLD and position.side != const.SELL:
             sell_3_price = ui_data.get_sell_price(3)
             if sell_3_price > 0 and self.bitmex_sell_1_price - sell_3_price >= variable.THRESHOLD:
-                api.get_site_api().open_order(const.BUY, sell_3_price)
+                api.get_site_api().open_order_async(sell_3_price, variable.MAX_AMOUNT, const.BUY)
             else:
-                api.get_site_api().open_order(const.BUY, sell_2_price)
+                api.get_site_api().open_order_async(sell_2_price, variable.MAX_AMOUNT, const.BUY)
             result = True
         elif buy_2_price - self.bitmex_buy_1_price >= variable.THRESHOLD and position.side != const.BUY:
             buy_3_price = ui_data.get_buy_price(3)
             if buy_3_price > 0 and buy_3_price - self.bitmex_buy_1_price >= variable.THRESHOLD:
-                api.get_site_api().open_order(const.SELL, buy_3_price)
+                api.get_site_api().open_order_async(buy_3_price, variable.MAX_AMOUNT, const.SELL)
             else:
-                api.get_site_api().open_order(const.SELL, buy_2_price)
+                api.get_site_api().open_order_async(buy_2_price, variable.MAX_AMOUNT, const.SELL)
             result = True
         return result
 

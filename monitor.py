@@ -10,6 +10,7 @@ import strategy.strategy_core as strategy
 import api.user_position as position
 import api.core as api
 import traceback
+import api.bbx_login as bbx_login
 
 THRESHOLD_SHIFT = 0
 
@@ -47,13 +48,23 @@ def start_monitor():
             strategy.receive_price_change(buy_2_price, sell_2_price)
             print(datetime.datetime.now(), 'ws:('+str([bitmex_buy_1, bitmex_sell_1])+')',
                   # 'web:'+str([bitmex_last_price, bitmex_sell_1, bitmex_buy_1]),
-                  'target卖买二:'+str([buy_2_price, sell_2_price]), position.get_target_position().print(),
+                  'target卖买二:'+str([buy_2_price, sell_2_price]), position.get_target_position().value(),
                   '耗时:', int((time.time() - start_time)*1000), int(ui_time*1000), int(data_time*1000))
 
         temp_bitmex_sell_1 = bitmex_sell_1
         temp_bitmex_buy_1 = bitmex_buy_1
         temp_buy_2_price = buy_2_price
         temp_sell_2_price = sell_2_price
+
+
+def run():
+    try:
+        position.set_target_position(api.get_site_api().get_user_position())
+        bitmex_data.open_bitmex_asyn()
+        start_monitor()
+    except Exception as e:
+        traceback.print_exc()
+        wechat.send_message(str(e))
 
 
 def ready():
@@ -63,10 +74,21 @@ def ready():
         if input_text == 'y':
             pass
         elif input_text == 'biex':
-            try:
-                position.set_target_position(api.get_site_api().get_user_position())
-                bitmex_data.open_bitmex_asyn()
-                start_monitor()
-            except Exception as e:
-                traceback.print_exc()
-                wechat.send_message(str(e))
+            run()
+        elif input_text == 'bbx':
+            _type = input('Run type(a/A as auto, m/M as manual):')
+            if _type == 'a':
+                bbx_login.get_token_uid()
+                if variable.BBX_TOKEN == '':
+                    print('login failed')
+                else:
+                    run()
+            elif _type == 'm':
+                token = input('token: ')
+                variable.BBX_TOKEN = token
+                uid = input('uid')
+                variable.BBX_UID = uid
+                run()
+
+
+
