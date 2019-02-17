@@ -1,7 +1,7 @@
 BTC = 1
-BTC_REVERSE = 2
-ETH = 3
-ETH_REVERSE = 4
+BTC_REVERSE = 10
+ETH = 2
+ETH_REVERSE = 11
 
 BUY = 'Buy'
 SELL = 'Sell'
