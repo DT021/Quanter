@@ -1,9 +1,7 @@
-import datetime
-
 import time
 import data.ui_data as ui
 from selenium import webdriver
-import variable
+import variable, util
 import data.bitmex_data as bitmex_data
 import wechat_notifier as wechat
 import strategy.strategy_core as strategy
@@ -46,7 +44,7 @@ def start_monitor():
         if temp_bitmex_sell_1 != bitmex_sell_1 or temp_bitmex_buy_1 != bitmex_buy_1 \
                 or temp_buy_2_price != buy_2_price or temp_sell_2_price != sell_2_price:
             strategy.receive_price_change(buy_2_price, sell_2_price)
-            print(datetime.datetime.now()[11:-3], 'ws:'+str([bitmex_buy_1, bitmex_sell_1]),
+            print(util.get_print_datetime(), 'ws:'+str([bitmex_buy_1, bitmex_sell_1]),
                   # 'web:'+str([bitmex_last_price, bitmex_sell_1, bitmex_buy_1]),
                   '买卖二:'+str([buy_2_price, sell_2_price]), position.get_target_position().value(),
                   '耗时:', int((time.time() - start_time)*1000), bitmex_data.get_buy_1_list(), bitmex_data.get_sell_1_list())
