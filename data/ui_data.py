@@ -95,7 +95,29 @@ class BBXUiImpl(AbsUiData):
 
 
 class DeribitUiImpl(AbsUiData):
-    pass
+    def find_element_by_command(self, command, which=None):
+        if command == Command.SELL_PRICE:
+            which = 12 - which
+            which = str(which)
+            return self.browser.find_element_by_xpath(
+                '//*[@id="current_market_ask"]/tr[' + which + ']/td[1]')
+
+        elif command == Command.SELL_AMOUNT:
+            which = 12 - which
+            which = str(which)
+            return self.browser.find_element_by_xpath(
+                '//*[@id="current_market_ask"]/tr[' + which + ']/td[2]')
+
+        elif command == Command.BUY_PRICE:
+            which = str(which)
+            return self.browser.find_element_by_xpath(
+                '//*[@id="current_market_bid"]/tr[' + which + ']/td[1]')
+
+        elif command == Command.BUY_AMOUNT:
+            which = str(which)
+            return self.browser.find_element_by_xpath(
+                '//*[@id="current_market_bid"]/tr[' + which + ']/td[2]')
+
 
 
 class BiexUiImpl(AbsUiData):

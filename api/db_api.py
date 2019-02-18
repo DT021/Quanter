@@ -9,11 +9,9 @@ import api.user_position as user_position
 
 class DeribitApi(AbsApi):
     client = None
-    symbol = None
 
     def __init__(self):
         self.client = RestClient(variable.DB_API_KEY, variable.DB_SECRET)
-        self.symbol = util.get_bm_ticker(variable.CURRENT_ID)
 
     def get_user_position(self):
         response = self.client.positions()
