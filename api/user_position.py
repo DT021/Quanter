@@ -11,7 +11,8 @@ target_position = Position()
 def set_target_position(position):
     TARGET_LOCK.acquire()
     global target_position
-    target_position = position
+    if position is not None:
+        target_position = position
     TARGET_LOCK.release()
 
 

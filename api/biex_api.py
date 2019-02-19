@@ -134,9 +134,12 @@ class BiexApi(AbsApi):
             return Position()
 
 
+# variable.BIEX_API_KEY = 'EO1bUXWlX8cPYWs4CKrUOMDf2oQ2H2f0ncdMnxCmLrJpXmb_Fogo9eaECeHBl_tG'
+# variable.BIEX_SECRET = 'IKC8jSDq9nrPKz4_WEqBXWWsxlOEzV6izpIIenaL4_Z23XJL'
+# variable.CURRENT_ID = const.ETH_REVERSE
 # biex = BiexApi()
 # biex.open_order(120, 1, const.BUY)
-# biex.open_order(122, 1, const.BUY)
-# biex.cancel_all_order()
-# biex.cancel_order(190744117611995138)
-# biex.get_user_position().print()
+# # biex.open_order(122, 1, const.BUY)
+# # biex.cancel_all_order()
+# # biex.cancel_order(190744117611995138)
+# print(biex.get_user_position().value())

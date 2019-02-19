@@ -36,8 +36,8 @@ class BbxApi(AbsApi):
     def get_user_position(self):
         url = USER_POSITION + '?contractID=' + str(variable.CURRENT_ID) + '&status=3'
         response = requests.get(url, headers=get_header(time.time())).json()
-        position_result = Position()
         if response['errno'] == 'OK':
+            position_result = Position()
             data = response['data']
             positions = data['positions']
             for p in positions:
@@ -49,7 +49,9 @@ class BbxApi(AbsApi):
                 position_result.position_id = p['position_id']
                 position_result.average_price = float(p['hold_avg_price'])
                 break
-        return position_result
+            return position_result
+        print('********************get position failed', response)
+        return None
 
     def open_order(self, price, amount, side):
         time_stamp = time.time()
@@ -64,16 +66,16 @@ class BbxApi(AbsApi):
             "nonce": int(time_stamp)
         }
         response = send_post_request(SUBMIT_ORDER, json.dumps(body), time_stamp).json()
-        print(response)
         time.sleep(0.15)
         user_position.set_target_position(self.get_user_position())
-        print(user_position.get_target_position().value())
+        print('After open', user_position.get_target_position().value())
         if response['message'] == 'Success':
             data = response['data']
             order_id = data['order_id']
             self.cancel_order(order_id)
 
     def open_order_async(self, price, amount, side):
+        print('************************** Open ', side, price, '**************************')
         threading.Thread(target=self.open_order, args=(price, amount, side)).start()
 
     def close_order(self, price, amount, side, _id):
@@ -88,16 +90,16 @@ class BbxApi(AbsApi):
             "nonce": int(time_stamp)
         }
         response = send_post_request(SUBMIT_ORDER, json.dumps(body), time_stamp).json()
-        print(response)
         time.sleep(0.15)
-        user_position.set_target_position(self.get_user_position())
-        print(user_position.get_target_position().value())
         if response['message'] == 'Success':
             data = response['data']
             order_id = data['order_id']
             self.cancel_order(order_id)
+        user_position.set_target_position(self.get_user_position())
+        print('After close', user_position.get_target_position().value())
 
     def close_order_async(self, price, amount, side, _id):
+        print('************************** Close ', price, amount, '**************************')
         threading.Thread(target=self.close_order, args=(price, amount, side, _id)).start()
 
     def cancel_order(self, order_id):

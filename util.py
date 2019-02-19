@@ -3,7 +3,7 @@ import datetime
 
 
 def get_print_datetime():
-    time = datetime.datetime.now()
+    time = str(datetime.datetime.now())
     return time[11:-3]
 
 

@@ -20,6 +20,12 @@ class OldStrategy(AbsStrategy):
 
         buy_1_price = ui_data.get_buy_price(1)
         sell_1_price = ui_data.get_sell_price(1)
+        print(variable.CLOSE_THRESHOLD, variable.CLOSE_DIFF, 'check close:', position.value(),
+              [self.bitmex_buy_1_price, self.bitmex_sell_1_price], [buy_1_price, sell_1_price])
+        print('Buy:', self.bitmex_sell_1_price - sell_1_price <= variable.CLOSE_THRESHOLD,
+              sell_1_price - buy_1_price <= variable.CLOSE_DIFF,
+              'Sell:', buy_1_price - self.bitmex_buy_1_price <= variable.CLOSE_THRESHOLD,
+              sell_1_price - buy_1_price <= variable.CLOSE_DIFF)
 
         if buy_1_price < 0 or sell_1_price < 0:
             return
@@ -38,7 +44,7 @@ class OldStrategy(AbsStrategy):
                 sell_1_amount = ui_data.get_sell_amount(1)
                 if sell_1_amount < 0:
                     sell_1_amount = 999999
-                    api.get_site_api().close_order_async(sell_1_price, min(sell_1_amount, available_amount),
+                api.get_site_api().close_order_async(sell_1_price, min(sell_1_amount, available_amount),
                                                          const.BUY, position.position_id)
 
     def check_need_open(self, sell_2_price, buy_2_price):

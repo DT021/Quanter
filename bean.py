@@ -13,4 +13,4 @@ class Position:
         return position
 
     def value(self):
-        return [self.amount, self.side]
+        return [self.average_price, self.amount, self.side]

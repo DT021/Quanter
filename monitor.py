@@ -9,8 +9,7 @@ import api.user_position as position
 import api.core as api
 import traceback
 import api.bbx_login as bbx_login
-
-THRESHOLD_SHIFT = 0
+import threading
 
 
 def init_browser():
@@ -72,7 +71,7 @@ def ready():
         if input_text == 'y':
             pass
         elif input_text == 'biex':
-            run()
+            threading.Thread(target=run).start()
         elif input_text == 'bbx':
             _type = input('Run type(a/A as auto, m/M as manual):')
             if _type == 'a':
@@ -80,13 +79,16 @@ def ready():
                 if variable.BBX_TOKEN == '':
                     print('login failed')
                 else:
-                    run()
+                    threading.Thread(target=run).start()
             elif _type == 'm':
                 token = input('token: ')
                 variable.BBX_TOKEN = token
                 uid = input('uid')
                 variable.BBX_UID = uid
-                run()
+                threading.Thread(target=run).start()
+        elif input_text == 'position':
+            position.set_target_position(api.get_site_api().get_user_position())
+            print('manual update position!')
 
 
 
