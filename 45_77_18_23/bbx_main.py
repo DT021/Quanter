@@ -13,6 +13,6 @@ variable.CLOSE_THRESHOLD = 3  # close when diff between bm and target below
 variable.MAX_AMOUNT = 5000  # max amount per open
 
 # old strategy required
-variable.CLOSE_DIFF = 2
+variable.CLOSE_DIFF = 3
 
 monitor.ready()
