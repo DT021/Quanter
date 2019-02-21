@@ -97,6 +97,6 @@ class TempBiexStrategy(AbsStrategy):
             print('threshold need init')
             return
 
-        self.bitmex_sell_1_price, self.bitmex_buy_1_price = bitmex_data.get_quote_1()
+        self.bitmex_sell_1_price, self.bitmex_buy_1_price = bitmex_data.get_compare_quote_1()
         if not self.check_need_open(sell_2, buy_2):
             self.check_need_close()

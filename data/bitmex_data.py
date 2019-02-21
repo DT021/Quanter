@@ -21,22 +21,27 @@ def get_quote_1():
     LOCK.acquire()
     order_copy = copy.deepcopy(order_list)
     LOCK.release()
-    sell_1 = -1
-    buy_1 = -1
+    sell_1 = -100
+    buy_1 = -100
     for _id in order_copy:
         order = order_copy[_id]
         price = order['price']
         if order['side'] == 'Sell':
-            if sell_1 == -1:
+            if sell_1 == -100:
                 sell_1 = price
             else:
                 sell_1 = min(sell_1, price)
         else:
-            if buy_1 == -1:
+            if buy_1 == -100:
                 buy_1 = price
             else:
                 buy_1 = max(buy_1, price)
     return sell_1, buy_1
+
+
+def get_compare_quote_1():
+    sell_1, buy_1 = get_quote_1()
+    return sell_1 + variable.PRICE_SHIFT, buy_1 + variable.PRICE_SHIFT
 
 
 def get_amount_1():

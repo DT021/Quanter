@@ -22,16 +22,21 @@ class BitmexApi(AbsApi):
             return Position()
         position = position_list[0]
         result_position = Position()
+        average_price = position['avgEntryPrice']
+        if average_price <= 0:
+            return result_position
+        result_position.average_price = average_price
         amount = position['execQty']
-        result_position.average_price = position['avgEntryPrice']
         result_position.side = const.BUY if amount > 0 else const.SELL
         result_position.amount = abs(amount)
         return result_position
 
     def open_order(self, price, amount, side):
+        print('************bm ', side, price, amount, '****************')
         self.client.Order.Order_new(symbol=self.symbol, orderQty=amount, price=price, side=side).result()
         time.sleep(0.1)
         user_position.set_bm_position(self.get_user_position())
+        print('after bm position:', user_position.get_bm_position().value())
         self.cancel_all_order()
 
     def close_order(self, price, amount, side, _id=None):

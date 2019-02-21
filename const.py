@@ -15,7 +15,7 @@ BIEX = 'biex'
 
 STRATEGY_TEMP_BIEX = 'temp_biex_strategy'
 STRATEGY_OLD = 'old_strategy'
-STRATEGY_HEDGE = 'hedge_strategy'
+STRATEGY_DB_HEDGE = 'db_hedge_strategy'
 
 
 class Command(object):

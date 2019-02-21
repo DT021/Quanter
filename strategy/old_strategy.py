@@ -45,7 +45,7 @@ class OldStrategy(AbsStrategy):
                 if sell_1_amount < 0:
                     sell_1_amount = 999999
                 api.get_site_api().close_order_async(sell_1_price, min(sell_1_amount, available_amount),
-                                                         const.BUY, position.position_id)
+                                                     const.BUY, position.position_id)
 
     def check_need_open(self, sell_2_price, buy_2_price):
         result = False
@@ -71,6 +71,6 @@ class OldStrategy(AbsStrategy):
             print('threshold need init')
             return
 
-        self.bitmex_sell_1_price, self.bitmex_buy_1_price = bitmex_data.get_quote_1()
+        self.bitmex_sell_1_price, self.bitmex_buy_1_price = bitmex_data.get_compare_quote_1()
         if not self.check_need_open(sell_2, buy_2):
             self.check_need_close()

@@ -8,6 +8,8 @@ THRESHOLD = -1  # diff between bm and target
 CLOSE_THRESHOLD = -1  # close when diff between bm and target below
 MAX_AMOUNT = -1  # max amount per open
 
+PRICE_SHIFT = 0
+
 # old strategy required
 CLOSE_DIFF = -1  #
 
@@ -20,6 +22,7 @@ BBX_UID = ''
 # hedge required
 BM_KEY = ''
 BM_SECRET = ''
+BM_CLOSE_DIFF = -1
 
 # biex required
 BIEX_API_KEY = ''

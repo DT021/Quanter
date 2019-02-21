@@ -5,6 +5,7 @@ from bean import Position
 import variable, const, util
 import time
 import api.user_position as user_position
+import threading
 
 
 class DeribitApi(AbsApi):
@@ -23,6 +24,10 @@ class DeribitApi(AbsApi):
             break
         return position_result
 
+    def open_order_async(self, price, amount, side):
+        print('************************** Open ', side, price, '**************************')
+        threading.Thread(target=self.open_order, args=(price, amount, side)).start()
+
     def open_order(self, price, amount, side):
         self.client.buy('BTC-PERPETUAL', amount, price)
         time.sleep(0.1)
@@ -38,3 +43,8 @@ class DeribitApi(AbsApi):
     def cancel_all_order(self):
         return self.client.cancelall()
 
+
+# variable.DB_API_KEY = '5SFJJZNaZVbeE'
+# variable.DB_SECRET = 'PZ45FI47HLEVJGNIH5M5IKNTUHKF5ZFF'
+# db = DeribitApi()
+# db.open_order(3950, 1, const.BUY)

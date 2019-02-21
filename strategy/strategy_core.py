@@ -1,6 +1,6 @@
 import variable, const
 from strategy.old_strategy import OldStrategy
-from strategy.hedge_strategy import HedgeStrategy
+from strategy.db_hedge_strategy import DBHedgeStrategy
 from strategy.temp_biex_strategy import TempBiexStrategy
 
 target_strategy = None
@@ -13,8 +13,8 @@ def get_strategy():
 
     if variable.TARGET_STRATEGY == const.STRATEGY_OLD:
         target_strategy = OldStrategy()
-    elif variable.TARGET_STRATEGY == const.STRATEGY_HEDGE:
-        target_strategy = HedgeStrategy()
+    elif variable.TARGET_STRATEGY == const.STRATEGY_DB_HEDGE:
+        target_strategy = DBHedgeStrategy()
     elif variable.TARGET_STRATEGY == const.STRATEGY_TEMP_BIEX:
         target_strategy = TempBiexStrategy()
 
