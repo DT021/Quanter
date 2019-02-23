@@ -7,6 +7,8 @@ import requests
 import urllib.parse
 from bean import Position
 import util
+import threading
+import api.user_position as user_position
 
 
 BASE_URL = 'https://api.biex.com/api/v1'
@@ -62,7 +64,7 @@ def do_api_request(method, url, content_json):
         full_url = full_url + '&' + convert_request(content_json.keys(), content_json)
         response = requests.get(full_url)
     print(method, full_url)
-    print(response.text)
+    # print(response.text)
     return response.json()
 
 
@@ -74,6 +76,10 @@ class BiexApi(AbsApi):
     def get_position(self):
         pass
 
+    def open_order_async(self, price, amount, side):
+        print('************************** Open ', side, price, '**************************')
+        threading.Thread(target=self.open_order, args=(price, amount, side)).start()
+
     def open_order(self, price, amount, side):
         content_json = {
             'symbol': self.symbol,
@@ -82,16 +88,31 @@ class BiexApi(AbsApi):
             'amount': amount,
             'price': price
         }
-        response = do_api_request(const.POST, ORDER_URL, content_json)
-        order_id = response['data']
-        time.sleep(0.6)
-        order_state = get_order_state(self.get_order_info(order_id))
-        print(order_state)
-        if order_state == 'noDeal' or order_state == 'partialDeal':
-            self.cancel_order(order_id)
+        do_api_request(const.POST, ORDER_URL, content_json)
+        time.sleep(0.8)
+        self.cancel_all_order()
+        time.sleep(0.8)
+        user_position.set_target_position(self.get_user_position())
+        print('After open', user_position.get_target_position().value())
+
+    def close_order_async(self, price, amount, side, _id=None):
+        print('************************** Close ', price, amount, '**************************')
+        self.close_order(price, amount, side, _id)
 
     def close_order(self, price, amount, side, _id):
-        self.open_order(price, amount, side)
+        content_json = {
+            'symbol': self.symbol,
+            'type': 'limitPrice',
+            'side': 'sell' if side == const.SELL else 'buy',
+            'amount': amount,
+            'price': price
+        }
+        do_api_request(const.POST, ORDER_URL, content_json)
+        time.sleep(0.8)
+        self.cancel_all_order()
+        time.sleep(0.8)
+        user_position.set_target_position(self.get_user_position())
+        print('After close', user_position.get_target_position().value())
 
     def get_order_info(self, order_id):
         content_json = {
@@ -134,12 +155,11 @@ class BiexApi(AbsApi):
             return Position()
 
 
-# variable.BIEX_API_KEY = 'EO1bUXWlX8cPYWs4CKrUOMDf2oQ2H2f0ncdMnxCmLrJpXmb_Fogo9eaECeHBl_tG'
-# variable.BIEX_SECRET = 'IKC8jSDq9nrPKz4_WEqBXWWsxlOEzV6izpIIenaL4_Z23XJL'
 # variable.CURRENT_ID = const.ETH_REVERSE
 # biex = BiexApi()
-# biex.open_order(120, 1, const.BUY)
-# # biex.open_order(122, 1, const.BUY)
-# # biex.cancel_all_order()
-# # biex.cancel_order(190744117611995138)
+# # biex.open_order(144, 1, const.BUY)
+# biex.open_order(143, 1, const.SELL)
+# biex.open_order(122, 1, const.BUY)
+# biex.cancel_all_order()
+# biex.cancel_order(190744117611995138)
 # print(biex.get_user_position().value())

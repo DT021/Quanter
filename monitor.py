@@ -102,7 +102,7 @@ def ready():
         elif input_text == 'shift':
             value = input('value: ')
             print('before:', variable.PRICE_SHIFT)
-            variable.PRICE_SHIFT = int(value)
+            variable.PRICE_SHIFT = float(value)
             print('after:', variable.PRICE_SHIFT)
 
 
