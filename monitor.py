@@ -76,7 +76,7 @@ def ready():
         input_text = input('开始监控:')
         if input_text == 'y':
             pass
-        elif input_text == 'biex' or input_text == 'db':
+        elif input_text == 'biex' or input_text == 'db' or input_text == 'by':
             threading.Thread(target=run).start()
         elif input_text == 'bbx':
             _type = input('Run type(a/A as auto, m/M as manual):')

@@ -36,6 +36,15 @@ def get_biex_symbol(current_id):
         return 'ETH2USD_ISWAP'
 
 
+def get_by_symbol(_id):
+    if _id == const.BTC or _id == const.BTC_REVERSE:
+        return 'BTCUSD'
+    elif _id == const.ETH or _id == const.ETH_REVERSE:
+        return 'ETHUSD'
+    else:
+        return ''
+
+
 def get_target_site_url(site, _id):
     if site == const.BBX:
         return 'https://swap.bbx.com/?id=' + str(_id)
@@ -43,3 +52,5 @@ def get_target_site_url(site, _id):
         return 'https://www.deribit.com/main#/futures?tab=BTC-PERPETUAL'
     elif site == const.BIEX:
         return 'https://www.biex.com/contract/trade?exchangePair=' + get_biex_symbol(_id)
+    elif site == const.BYBIT:
+        return 'https://www.bybit.com/app/exchange/' + get_by_symbol(_id)

@@ -12,6 +12,7 @@ POST = 'POST'
 BBX = 'bbx'
 DERIBIT = 'deribit'
 BIEX = 'biex'
+BYBIT = 'bybit'
 
 STRATEGY_TEMP_BIEX = 'temp_biex_strategy'
 STRATEGY_OLD = 'old_strategy'

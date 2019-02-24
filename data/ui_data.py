@@ -12,6 +12,8 @@ def init(browser):
         site = DeribitUiImpl(browser)
     elif variable.TARGET_SITE == const.BIEX:
         site = BiexUiImpl(browser)
+    elif variable.TARGET_SITE == const.BYBIT:
+        site = BybitUiImpl(browser)
 
 
 def get_buy_price(which):
@@ -119,7 +121,6 @@ class DeribitUiImpl(AbsUiData):
                 '//*[@id="current_market_bid"]/tr[' + which + ']/td[2]')
 
 
-
 class BiexUiImpl(AbsUiData):
 
     def find_element_by_command(self, command, which=None):
@@ -160,3 +161,29 @@ class BiexUiImpl(AbsUiData):
         elif command == Command.AMOUNT_EDIT:
             return self.browser.find_element_by_xpath(
                 '//*[@id="entrustAmt"]')
+
+
+class BybitUiImpl(AbsUiData):
+
+    def find_element_by_command(self, command, which=None):
+        if command == Command.SELL_PRICE:
+            which = 21 - which
+            which = str(which)
+            return self.browser.find_element_by_xpath(
+                '//*[@id="app"]/div[2]/div/div/div[1]/div/div[2]/div/div/div[2]/div/div[2]/div[1]/div['+which+']/div[1]')
+
+        elif command == Command.SELL_AMOUNT:
+            which = 8 - which
+            which = str(which)
+            return self.browser.find_element_by_xpath(
+                '//*[@id="app"]/div[2]/div/div/div[1]/div/div[2]/div/div/div[2]/div/div[2]/div[1]/div['+which+']/div[2]/div')
+
+        elif command == Command.BUY_PRICE:
+            which = str(which)
+            return self.browser.find_element_by_xpath(
+                '//*[@id="app"]/div[2]/div/div/div[1]/div/div[2]/div/div/div[2]/div/div[2]/div[3]/div['+which+']/div[1]')
+
+        elif command == Command.BUY_AMOUNT:
+            which = str(which)
+            return self.browser.find_element_by_xpath(
+                '//*[@id="app"]/div[2]/div/div/div[1]/div/div[2]/div/div/div[2]/div/div[2]/div[3]/div['+which+']/div[2]/div')

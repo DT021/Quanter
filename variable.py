@@ -32,4 +32,8 @@ BIEX_SECRET = ''
 DB_API_KEY = ''
 DB_SECRET = ''
 
+# bybit required
+BY_API_KEY = ''
+BY_SECRET = ''
+
 
