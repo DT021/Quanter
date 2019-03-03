@@ -92,7 +92,7 @@ def ready():
                 uid = input('uid')
                 variable.BBX_UID = uid
                 threading.Thread(target=run).start()
-        elif input_text == 'position':
+        elif input_text == 'p':
             position.set_target_position(api.get_site_api().get_user_position())
             print('target position: ', position.get_target_position().value())
             if variable.TARGET_STRATEGY == const.STRATEGY_DB_HEDGE:

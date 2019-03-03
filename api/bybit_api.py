@@ -78,7 +78,7 @@ class BybitApi(AbsApi):
             'time_in_force': 'ImmediateOrCancel'
         }
         do_api_request(const.POST, ORDER_URL, content_json)
-        time.sleep(0.1)
+        time.sleep(0.3)
         user_position.set_target_position(self.get_user_position())
         print('After open', user_position.get_target_position().value())
 
@@ -96,7 +96,7 @@ class BybitApi(AbsApi):
             'time_in_force': 'ImmediateOrCancel'
         }
         do_api_request(const.POST, ORDER_URL, content_json)
-        time.sleep(0.2)
+        time.sleep(0.4)
         user_position.set_target_position(self.get_user_position())
         print('After close', user_position.get_target_position().value())
 
