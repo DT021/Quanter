@@ -66,7 +66,7 @@ class BbxApi(AbsApi):
             "nonce": int(time_stamp)
         }
         response = send_post_request(SUBMIT_ORDER, json.dumps(body), time_stamp).json()
-        time.sleep(0.15)
+        time.sleep(0.3)
         user_position.set_target_position(self.get_user_position())
         print('After open', user_position.get_target_position().value())
         if response['message'] == 'Success':
@@ -90,7 +90,7 @@ class BbxApi(AbsApi):
             "nonce": int(time_stamp)
         }
         response = send_post_request(SUBMIT_ORDER, json.dumps(body), time_stamp).json()
-        time.sleep(0.15)
+        time.sleep(0.3)
         if response['message'] == 'Success':
             data = response['data']
             order_id = data['order_id']

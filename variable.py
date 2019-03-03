@@ -36,4 +36,8 @@ DB_SECRET = ''
 BY_API_KEY = ''
 BY_SECRET = ''
 
+# tdex required
+TDEX_API_KEY = ''
+TDEX_SECRET = ''
+
 

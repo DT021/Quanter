@@ -13,6 +13,7 @@ BBX = 'bbx'
 DERIBIT = 'deribit'
 BIEX = 'biex'
 BYBIT = 'bybit'
+TDEX = 'tdex'
 
 STRATEGY_TEMP_BIEX = 'temp_biex_strategy'
 STRATEGY_OLD = 'old_strategy'

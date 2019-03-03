@@ -62,7 +62,7 @@ def do_api_request(method, url, content_json):
 class BybitApi(AbsApi):
 
     def __init__(self):
-        self.symbol = util.get_by_symbol(variable.CURRENT_ID)
+        self.symbol = util.get_common_symbol(variable.CURRENT_ID)
 
     def open_order_async(self, price, amount, side):
         print('************************** Open ', side, price, '**************************')
