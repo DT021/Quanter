@@ -2,6 +2,12 @@ BTC = 1
 BTC_REVERSE = 10
 ETH = 2
 ETH_REVERSE = 11
+EOS = 6
+EOS_REVERSE = 16
+XRP = 17
+ETC = 13
+LTC = 14
+BCH = 15
 
 BUY = 'Buy'
 SELL = 'Sell'
@@ -13,10 +19,18 @@ BBX = 'bbx'
 DERIBIT = 'deribit'
 BIEX = 'biex'
 BYBIT = 'bybit'
+TDEX = 'tdex'
 
 STRATEGY_TEMP_BIEX = 'temp_biex_strategy'
 STRATEGY_OLD = 'old_strategy'
 STRATEGY_DB_HEDGE = 'db_hedge_strategy'
+
+COMPARE_WITH_TICK1 = 'tick1'
+COMPARE_WITH_TICK2 = 'tick2'
+
+WS_SOURCE_BITMEX = 'bitmex'
+WS_SOURCE_HUOBI = 'huobi'
+UI_SOURCE_BINANCE = 'binance_ui'
 
 
 class Command(object):

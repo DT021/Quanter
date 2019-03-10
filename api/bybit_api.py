@@ -62,7 +62,7 @@ def do_api_request(method, url, content_json):
 class BybitApi(AbsApi):
 
     def __init__(self):
-        self.symbol = util.get_by_symbol(variable.CURRENT_ID)
+        self.symbol = util.get_common_symbol(variable.CURRENT_ID)
 
     def open_order_async(self, price, amount, side):
         print('************************** Open ', side, price, '**************************')
@@ -78,7 +78,7 @@ class BybitApi(AbsApi):
             'time_in_force': 'ImmediateOrCancel'
         }
         do_api_request(const.POST, ORDER_URL, content_json)
-        time.sleep(0.3)
+        time.sleep(0.5)
         user_position.set_target_position(self.get_user_position())
         print('After open', user_position.get_target_position().value())
 
@@ -96,7 +96,7 @@ class BybitApi(AbsApi):
             'time_in_force': 'ImmediateOrCancel'
         }
         do_api_request(const.POST, ORDER_URL, content_json)
-        time.sleep(0.4)
+        time.sleep(0.5)
         user_position.set_target_position(self.get_user_position())
         print('After close', user_position.get_target_position().value())
 

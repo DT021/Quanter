@@ -36,11 +36,24 @@ def get_biex_symbol(current_id):
         return 'ETH2USD_ISWAP'
 
 
-def get_by_symbol(_id):
+def get_common_symbol(_id):
     if _id == const.BTC or _id == const.BTC_REVERSE:
         return 'BTCUSD'
     elif _id == const.ETH or _id == const.ETH_REVERSE:
         return 'ETHUSD'
+    elif _id == const.EOS or _id == const.EOS_REVERSE:
+        return 'EOSUSD'
+    else:
+        return ''
+
+
+def get_huobi_symbol(_id):
+    if _id == const.BTC or _id == const.BTC_REVERSE:
+        return 'btcusdt'
+    elif _id == const.ETH or _id == const.ETH_REVERSE:
+        return 'ethusdt'
+    elif _id == const.EOS or _id == const.EOS_REVERSE:
+        return 'eosusdt'
     else:
         return ''
 
@@ -53,4 +66,6 @@ def get_target_site_url(site, _id):
     elif site == const.BIEX:
         return 'https://www.biex.com/contract/trade?exchangePair=' + get_biex_symbol(_id)
     elif site == const.BYBIT:
-        return 'https://www.bybit.com/app/exchange/' + get_by_symbol(_id)
+        return 'https://www.bybit.com/app/exchange/' + get_common_symbol(_id)
+    elif site == const.TDEX:
+        return 'https://www.tdex.com/trade/BTCUSD'

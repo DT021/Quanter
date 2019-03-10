@@ -185,7 +185,7 @@ def open_bitmex():
         wechat.send_message(str(e))
 
 
-def open_bitmex_asyn():
+def start():
     threading.Thread(target=open_bitmex).start()
 
 

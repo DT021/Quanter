@@ -2,7 +2,7 @@ import time
 import data.ui_data as ui
 from selenium import webdriver
 import variable, util, const
-import data.bitmex_data as bitmex_data
+import data.ws_data as ws_data
 import wechat_notifier as wechat
 import strategy.strategy_core as strategy
 import api.user_position as position
@@ -20,40 +20,45 @@ def init_browser():
 
 
 def start_monitor():
-    temp_bitmex_sell_1 = 0
-    temp_bitmex_buy_1 = 0
-    temp_buy_2_price = 0
-    temp_sell_2_price = 0
+    temp_ws_sell_1 = 0
+    temp_ws_buy_1 = 0
+    temp_buy_price = 0
+    temp_sell_price = 0
     while True:
-        if bitmex_data.last_price < 0:
-            wechat.send_message('bitmex掉线了')
+        last_price = ws_data.get_source().last_price
+        if last_price < 0:
+            wechat.send_message('ws掉线了')
             break
-        elif bitmex_data.last_price == 0:
-            print('bitmex暂时没有数据')
+        elif last_price == 0:
+            print('ws暂时没有数据')
             time.sleep(3)
             continue
         start_time = time.time()
-        buy_2_price = ui.get_buy_price(2)
-        sell_2_price = ui.get_sell_price(2)
-        if buy_2_price < 0 or sell_2_price < 0:
+        if variable.COMPARE_WITH == const.COMPARE_WITH_TICK1:
+            which = 1
+        else:
+            which = 2
+        buy_price = ui.get_buy_price(which)
+        sell_price = ui.get_sell_price(which)
+        if buy_price < 0 or sell_price < 0:
             continue
-        bitmex_sell_1, bitmex_buy_1 = bitmex_data.get_compare_quote_1()
-        if bitmex_buy_1 < 0 or bitmex_sell_1 < 0:
+        ws_sell_1, ws_buy_1 = ws_data.get_source().get_compare_quote_1()
+        if ws_buy_1 < 0 or ws_sell_1 < 0:
             continue
         ui_time = time.time() - start_time
         data_time = time.time() - start_time - ui_time
-        if temp_bitmex_sell_1 != bitmex_sell_1 or temp_bitmex_buy_1 != bitmex_buy_1 \
-                or temp_buy_2_price != buy_2_price or temp_sell_2_price != sell_2_price:
-            strategy.receive_price_change(buy_2_price, sell_2_price)
-            print(util.get_print_datetime(), 'ws:'+str([bitmex_buy_1, bitmex_sell_1]),
-                  # 'web:'+str([bitmex_last_price, bitmex_sell_1, bitmex_buy_1]),
-                  '买卖二:'+str([buy_2_price, sell_2_price]), position.get_target_position().value(),
-                  '耗时:', int((time.time() - start_time)*1000), bitmex_data.get_buy_1_list(), bitmex_data.get_sell_1_list())
+        if temp_ws_sell_1 != ws_sell_1 or temp_ws_buy_1 != ws_buy_1 \
+                or temp_buy_price != buy_price or temp_sell_price != sell_price:
+            strategy.receive_price_change(buy_price, sell_price)
+            print(util.get_print_datetime(), 'ws:'+str([ws_buy_1, ws_sell_1]),
+                  '买卖'+str(which), str([buy_price, sell_price]), position.get_target_position().value(),
+                  '耗时:', int((time.time() - start_time)*1000),
+                  ws_data.get_source().get_buy_1_list(), ws_data.get_source().get_sell_1_list())
 
-        temp_bitmex_sell_1 = bitmex_sell_1
-        temp_bitmex_buy_1 = bitmex_buy_1
-        temp_buy_2_price = buy_2_price
-        temp_sell_2_price = sell_2_price
+        temp_ws_sell_1 = ws_sell_1
+        temp_ws_buy_1 = ws_buy_1
+        temp_buy_price = buy_price
+        temp_sell_price = sell_price
 
 
 def run():
@@ -63,7 +68,7 @@ def run():
         if variable.TARGET_STRATEGY == const.STRATEGY_DB_HEDGE:
             position.set_bm_position(api.get_bitmex_api().get_user_position())
             print('bm position: ', position.get_bm_position().value())
-        bitmex_data.open_bitmex_asyn()
+        ws_data.get_source().start()
         start_monitor()
     except Exception as e:
         traceback.print_exc()

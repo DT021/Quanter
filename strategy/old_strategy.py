@@ -2,36 +2,36 @@ from strategy.base_strategy import AbsStrategy
 import api.user_position as user_position
 import api.core as api
 import data.ui_data as ui_data
-import data.bitmex_data as bitmex_data
+import data.ws_data as ws_data
 import const, variable
 
 
 class OldStrategy(AbsStrategy):
-    bitmex_buy_1_price = -1
-    bitmex_sell_1_price = -1
+    ws_buy_1_price = -1
+    ws_sell_1_price = -1
 
     def check_need_close(self):
         position = user_position.get_target_position()
         if position.amount <= 0:
             return
         available_amount = position.amount
-        if self.bitmex_buy_1_price <= 0 or self.bitmex_sell_1_price <= 0:
+        if self.ws_buy_1_price <= 0 or self.ws_sell_1_price <= 0:
             return
 
         buy_1_price = ui_data.get_buy_price(1)
         sell_1_price = ui_data.get_sell_price(1)
         print(variable.CLOSE_THRESHOLD, variable.CLOSE_DIFF, 'check close:', position.value(),
-              [self.bitmex_buy_1_price, self.bitmex_sell_1_price], [buy_1_price, sell_1_price])
-        print('Buy:', self.bitmex_sell_1_price - sell_1_price <= variable.CLOSE_THRESHOLD,
+              [self.ws_buy_1_price, self.ws_sell_1_price], [buy_1_price, sell_1_price])
+        print('Buy:', self.ws_sell_1_price - sell_1_price <= variable.CLOSE_THRESHOLD,
               sell_1_price - buy_1_price <= variable.CLOSE_DIFF,
-              'Sell:', buy_1_price - self.bitmex_buy_1_price <= variable.CLOSE_THRESHOLD,
+              'Sell:', buy_1_price - self.ws_buy_1_price <= variable.CLOSE_THRESHOLD,
               sell_1_price - buy_1_price <= variable.CLOSE_DIFF)
 
         if buy_1_price < 0 or sell_1_price < 0:
             return
 
         if position.side == const.BUY:
-            if (self.bitmex_sell_1_price - sell_1_price <= variable.CLOSE_THRESHOLD) \
+            if (self.ws_sell_1_price - sell_1_price <= variable.CLOSE_THRESHOLD) \
                     and (sell_1_price - buy_1_price <= variable.CLOSE_DIFF):
                 buy_1_amount = ui_data.get_buy_amount(1)
                 if buy_1_amount < 0:
@@ -39,7 +39,7 @@ class OldStrategy(AbsStrategy):
                 api.get_site_api().close_order_async(buy_1_price, min(available_amount, buy_1_amount),
                                                      const.SELL, position.position_id)
         elif position.side == const.SELL:
-            if (buy_1_price - self.bitmex_buy_1_price <= variable.CLOSE_THRESHOLD) \
+            if (buy_1_price - self.ws_buy_1_price <= variable.CLOSE_THRESHOLD) \
                     and (sell_1_price - buy_1_price <= variable.CLOSE_DIFF):
                 sell_1_amount = ui_data.get_sell_amount(1)
                 if sell_1_amount < 0:
@@ -47,30 +47,34 @@ class OldStrategy(AbsStrategy):
                 api.get_site_api().close_order_async(sell_1_price, min(sell_1_amount, available_amount),
                                                      const.BUY, position.position_id)
 
-    def check_need_open(self, sell_2_price, buy_2_price):
+    def check_need_open(self, sell_price, buy_price):
         result = False
         position = user_position.get_target_position()
-        if self.bitmex_sell_1_price - sell_2_price >= variable.THRESHOLD and position.side != const.SELL:
-            sell_3_price = ui_data.get_sell_price(3)
-            if sell_3_price > 0 and self.bitmex_sell_1_price - sell_3_price >= variable.THRESHOLD:
-                api.get_site_api().open_order_async(sell_3_price, variable.MAX_AMOUNT, const.BUY)
+        price_step = variable.PRICE_STEP
+        threshold = variable.THRESHOLD
+        if variable.COMPARE_WITH == const.COMPARE_WITH_TICK2:
+            threshold = threshold - price_step
+        if self.ws_sell_1_price - sell_price >= threshold and position.side != const.SELL:
+            next_sell_price = ui_data.get_sell_price(2 if variable.COMPARE_WITH == const.COMPARE_WITH_TICK1 else 3)
+            if next_sell_price > 0 and self.ws_sell_1_price - next_sell_price >= threshold:
+                api.get_site_api().open_order_async(next_sell_price, variable.MAX_AMOUNT, const.BUY)
             else:
-                api.get_site_api().open_order_async(sell_2_price, variable.MAX_AMOUNT, const.BUY)
+                api.get_site_api().open_order_async(sell_price, variable.MAX_AMOUNT, const.BUY)
             result = True
-        elif buy_2_price - self.bitmex_buy_1_price >= variable.THRESHOLD and position.side != const.BUY:
-            buy_3_price = ui_data.get_buy_price(3)
-            if buy_3_price > 0 and buy_3_price - self.bitmex_buy_1_price >= variable.THRESHOLD:
-                api.get_site_api().open_order_async(buy_3_price, variable.MAX_AMOUNT, const.SELL)
+        elif buy_price - self.ws_buy_1_price >= threshold and position.side != const.BUY:
+            next_buy_price = ui_data.get_buy_price(2 if variable.COMPARE_WITH == const.COMPARE_WITH_TICK1 else 3)
+            if next_buy_price > 0 and next_buy_price - self.ws_buy_1_price >= threshold:
+                api.get_site_api().open_order_async(next_buy_price, variable.MAX_AMOUNT, const.SELL)
             else:
-                api.get_site_api().open_order_async(buy_2_price, variable.MAX_AMOUNT, const.SELL)
+                api.get_site_api().open_order_async(buy_price, variable.MAX_AMOUNT, const.SELL)
             result = True
         return result
 
-    def on_price_change(self, sell_2, buy_2):
+    def on_price_change(self, sell_price, buy_price):
         if variable.THRESHOLD < 0 or variable.CLOSE_THRESHOLD < 0:
             print('threshold need init')
             return
 
-        self.bitmex_sell_1_price, self.bitmex_buy_1_price = bitmex_data.get_compare_quote_1()
-        if not self.check_need_open(sell_2, buy_2):
+        self.ws_sell_1_price, self.ws_buy_1_price = ws_data.get_source().get_compare_quote_1()
+        if not self.check_need_open(sell_price, buy_price):
             self.check_need_close()
