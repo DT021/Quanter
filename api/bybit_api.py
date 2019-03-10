@@ -73,7 +73,7 @@ class BybitApi(AbsApi):
             'symbol': self.symbol,
             'order_type': 'Limit',
             'side': side,
-            'qty': amount,
+            'qty': int(amount),
             'price': price,
             'time_in_force': 'ImmediateOrCancel'
         }
@@ -91,7 +91,7 @@ class BybitApi(AbsApi):
             'symbol': self.symbol,
             'order_type': 'Limit',
             'side': side,
-            'qty': amount,
+            'qty': int(amount),
             'price': price,
             'time_in_force': 'ImmediateOrCancel'
         }
