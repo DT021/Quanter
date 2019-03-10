@@ -3,6 +3,7 @@ from api.bitmex_api import BitmexApi
 from api.db_api import DeribitApi
 from api.biex_api import BiexApi
 from api.bybit_api import BybitApi
+from api.tdex_api import TdexApi
 import variable, const
 
 site_api = None
@@ -29,6 +30,8 @@ def get_site_api():
         site_api = BiexApi()
     elif variable.TARGET_SITE == const.BYBIT:
         site_api = BybitApi()
+    elif variable.TARGET_SITE == const.TDEX:
+        site_api = TdexApi()
 
     if site_api is None:
         print('api init failed')

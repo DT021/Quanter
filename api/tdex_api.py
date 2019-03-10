@@ -1,165 +1,139 @@
 from api.base_api import AbsApi
-import variable, time, const
-import hashlib
-import hmac
-import base64
-import requests
-import urllib.parse
+import json
 from bean import Position
-import util
-import threading
+import variable, const, util
+import time
 import api.user_position as user_position
+import threading
+import requests
+import hashlib
+import time
+import hmac
 
 
-BASE_URL = 'https://api.biex.com/api/v1'
-ORDER_URL = BASE_URL + '/order/order'
-ORDER_INFO_URL = BASE_URL + '/order/order_info'
-ORDER_CANCEL_URL = BASE_URL + '/order/order_cancel'
-ORDER_CANCEL_ALL_URL = BASE_URL + '/order/order_cancel_all'
-USER_POSITION_URL = BASE_URL + '/fund/contractAccountPosition'
+class Configs(object):
+    def __init__(self):
+        self.url = 'https://www.tdex.com/openapi/v1'
+        self.headers = {
+            'Content-Type': 'application/json',
+        }
+
+    def hmac_sign(self, path, expires, data=None):
+        if data is None:
+            data = ''
+        msg = path + expires + data
+        res = hmac.new(bytes(variable.TDEX_SECRET, 'utf-8'), bytes(msg, 'utf-8'), digestmod=hashlib.sha256).hexdigest()
+        return res
+
+    def verification(self, data, path):
+        expires = str(int(int(round(time.time() * 1000)) / 100000))
+        input = data
+        curPath = path
+        sign = self.hmac_sign(curPath, expires, input)
+        self.headers['api-signature'] = sign
+        self.headers['api-expires'] = expires
+
+    def request(self, data, path, type):
+        if type == 'get':
+            res = requests.post(self.url + path, data, headers=self.headers).json()
+        else:
+            res = requests.put(self.url + path, data, headers=self.headers).json()
+        return res
 
 
-def get_common_request_json():
-    common = {
-        "charset": "UTF-8",
-        "api_key": variable.TDEX_API_KEY,
-        "format": "json",
-        "version": "1.0",
-        "sign_type": "HmacSHA256",
-        "timestamp": str(int(time.time() * 1000)),
-    }
-    return common
+class Tdex(object):
+    configs = Configs()
+
+    def __init__(self):
+        self.configs.headers['api-key'] = variable.TDEX_API_KEY
+
+    def requestApi(self, input, path, type=None):
+        self.configs.verification(input, path)
+        res = self.configs.request(input, path, type)
+        return res
+
+    def futuresOpen(self, data={}):
+        input = json.dumps(data)
+        path = '/futures/open'
+        res = self.requestApi(input, path)
+        return res
+
+    def futuresClose(self, data={}):
+        input = json.dumps(data)
+        path = '/futures/close'
+        res = self.requestApi(input, path)
+        return res
+
+    def futuresGetOrders(self):
+        input = json.dumps({})
+        path = '/futures/orders'
+        res = self.requestApi(input, path, type)
+        return res
+
+    def futuresGetPosition(self):
+        input = json.dumps({})
+        path = '/futures/position'
+        res = self.requestApi(input, path, type)
+        return res
+
+    def futuresCancelOrders(self, data={}):
+        input = json.dumps(data)
+        path = '/futures/cancel'
+        res = self.requestApi(input, path, type)
+        return res
 
 
-def get_order_state(response):
-    if response['status'] == 'ok':
-        data = response['data']
-        return data['state']
-
-
-def convert_request(key_list, origin_dict):
-    sign_content = ''
-    for key in key_list:
-        d = str(key) + '=' + urllib.parse.quote(str(origin_dict[key]))
-        sign_content += d
-        sign_content += '&'
-    if len(sign_content) > 0:
-        sign_content = sign_content[:-1]
-    return sign_content
-
-
-def do_api_request(method, url, content_json):
-    common_json = get_common_request_json()
-    request_json = dict(common_json, **content_json)
-    key_list = sorted(request_json.keys(), key=str.lower, reverse=False)
-    sign_content = convert_request(key_list, request_json)
-    sha256 = hmac.new(bytes(variable.TDEX_SECRET, 'utf-8'), bytes(sign_content, 'utf-8'), digestmod=hashlib.sha256).digest()
-    signature = base64.b64encode(sha256)
-    signature = bytes.decode(signature)
-    common_json['sign'] = signature
-    full_url = url + '?' + convert_request(common_json.keys(), common_json)
-    if method == const.POST:
-        response = requests.post(full_url, data=content_json)
-    else:
-        full_url = full_url + '&' + convert_request(content_json.keys(), content_json)
-        response = requests.get(full_url)
-    print(method, full_url)
-    # print(response.text)
-    return response.json()
+def get_tdex_cid():
+    return 1
 
 
 class TdexApi(AbsApi):
+    client = None
 
     def __init__(self):
-        self.symbol = util.get_common_symbol(variable.CURRENT_ID)
+        self.client = Tdex()
 
-    def get_position(self):
-        pass
+    def get_user_position(self):
+        response = self.client.futuresGetPosition()
+        if response['status'] == 0:
+            position_result = Position()
+            data = response['data']
+            positions = data['list']
+            for p in positions:
+                position_result.amount = int(hold_vol) - int(freeze_vol)
+                _type = p['position_type']
+                position_result.side = const.BUY if _type == 1 else const.SELL
+                position_result.position_id = p['position_id']
+                position_result.average_price = float(p['hold_avg_price'])
+                break
+            return position_result
+        print('********************get position failed', response)
+        return None
 
     def open_order_async(self, price, amount, side):
         print('************************** Open ', side, price, '**************************')
         threading.Thread(target=self.open_order, args=(price, amount, side)).start()
 
     def open_order(self, price, amount, side):
-        content_json = {
-            'symbol': self.symbol,
-            'type': 'limitPrice',
-            'side': 'sell' if side == const.SELL else 'buy',
-            'amount': amount,
-            'price': price
+        data = {
+            "cid": get_tdex_cid(),
+            "side": 0 if side == const.BUY else 1,
+            "scale": 20,
+            "volume": int(amount)
         }
-        do_api_request(const.POST, ORDER_URL, content_json)
-        time.sleep(0.8)
-        self.cancel_all_order()
-        time.sleep(0.8)
+        print(self.client.futuresOpen(data))
+
+    def close_order(self, price, amount, side, _id=None):
+        self.client.sell('BTC-PERPETUAL', amount, price)
+        time.sleep(0.1)
         user_position.set_target_position(self.get_user_position())
-        print('After open', user_position.get_target_position().value())
-
-    def close_order_async(self, price, amount, side, _id=None):
-        print('************************** Close ', price, amount, '**************************')
-        self.close_order(price, amount, side, _id)
-
-    def close_order(self, price, amount, side, _id):
-        content_json = {
-            'symbol': self.symbol,
-            'type': 'limitPrice',
-            'side': 'sell' if side == const.SELL else 'buy',
-            'amount': amount,
-            'price': price
-        }
-        do_api_request(const.POST, ORDER_URL, content_json)
-        time.sleep(0.8)
         self.cancel_all_order()
-        time.sleep(0.8)
-        user_position.set_target_position(self.get_user_position())
-        print('After close', user_position.get_target_position().value())
-
-    def get_order_info(self, order_id):
-        content_json = {
-            'symbol': self.symbol,
-            'orderId': int(order_id),
-        }
-        return do_api_request(const.GET, ORDER_INFO_URL, content_json)
-
-    def cancel_order(self, order_id):
-        content_json = {
-            'symbol': self.symbol,
-            'orderId': int(order_id),
-        }
-        return do_api_request(const.POST, ORDER_CANCEL_URL, content_json)
 
     def cancel_all_order(self):
-        content_json = {
-            'symbol': self.symbol,
-        }
-        return do_api_request(const.POST, ORDER_CANCEL_ALL_URL, content_json)
+        return self.client.cancelall()
 
-    def get_user_position(self):
-        content_json = {
-            'symbol': self.symbol,
-        }
-        response = do_api_request(const.GET, USER_POSITION_URL, content_json)
-        if response['status'] == 'ok':
-            data = response['data']
-            for d in data:
-                amount = int(d['position'])
-                if amount <= 0:
-                    return Position()
-                position = Position()
-                position.amount = amount
-                position.average_price = float(d['avgCost'])
-                position.side = const.BUY if d['side'] == 'Long' else const.SELL
-                return position
-            return Position()
-        else:
-            return Position()
-
-
-# variable.CURRENT_ID = const.ETH_REVERSE
-# biex = BiexApi()
-# # biex.open_order(144, 1, const.BUY)
-# biex.open_order(143, 1, const.SELL)
-# biex.open_order(122, 1, const.BUY)
-# biex.cancel_all_order()
-# biex.cancel_order(190744117611995138)
-# print(biex.get_user_position().value())
+# variable.TDEX_API_KEY = 'cAEusLK1Qa45QMWzRmEmvt1p7V8JjJtn4ZR9Lzrf7XUBnpnedHbvwRDHQ8acTSGm'
+# variable.TDEX_SECRET = 'cAEusLFJ2saCXmXc4h4iS198YQcUiahYAYFmRTuu5texKuisQx9pE4CFXJ3dJ99A'
+# tdex = TdexApi()
+# # tdex.open_order(3880, 1, const.BUY)
+# tdex.get_user_position()

@@ -40,4 +40,7 @@ BY_SECRET = ''
 TDEX_API_KEY = ''
 TDEX_SECRET = ''
 
+WS_SOURCE = ''
+COMPARE_WITH = ''
+PRICE_STEP = -1
 

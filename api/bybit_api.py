@@ -73,12 +73,12 @@ class BybitApi(AbsApi):
             'symbol': self.symbol,
             'order_type': 'Limit',
             'side': side,
-            'qty': amount,
+            'qty': int(amount),
             'price': price,
             'time_in_force': 'ImmediateOrCancel'
         }
         do_api_request(const.POST, ORDER_URL, content_json)
-        time.sleep(0.3)
+        time.sleep(0.5)
         user_position.set_target_position(self.get_user_position())
         print('After open', user_position.get_target_position().value())
 
@@ -91,12 +91,12 @@ class BybitApi(AbsApi):
             'symbol': self.symbol,
             'order_type': 'Limit',
             'side': side,
-            'qty': amount,
+            'qty': int(amount),
             'price': price,
             'time_in_force': 'ImmediateOrCancel'
         }
         do_api_request(const.POST, ORDER_URL, content_json)
-        time.sleep(0.4)
+        time.sleep(0.5)
         user_position.set_target_position(self.get_user_position())
         print('After close', user_position.get_target_position().value())
 

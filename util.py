@@ -41,6 +41,19 @@ def get_common_symbol(_id):
         return 'BTCUSD'
     elif _id == const.ETH or _id == const.ETH_REVERSE:
         return 'ETHUSD'
+    elif _id == const.EOS or _id == const.EOS_REVERSE:
+        return 'EOSUSD'
+    else:
+        return ''
+
+
+def get_huobi_symbol(_id):
+    if _id == const.BTC or _id == const.BTC_REVERSE:
+        return 'btcusdt'
+    elif _id == const.ETH or _id == const.ETH_REVERSE:
+        return 'ethusdt'
+    elif _id == const.EOS or _id == const.EOS_REVERSE:
+        return 'eosusdt'
     else:
         return ''
 
