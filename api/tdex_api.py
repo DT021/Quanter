@@ -132,8 +132,6 @@ class TdexApi(AbsApi):
     def cancel_all_order(self):
         return self.client.cancelall()
 
-# variable.TDEX_API_KEY = 'cAEusLK1Qa45QMWzRmEmvt1p7V8JjJtn4ZR9Lzrf7XUBnpnedHbvwRDHQ8acTSGm'
-# variable.TDEX_SECRET = 'cAEusLFJ2saCXmXc4h4iS198YQcUiahYAYFmRTuu5texKuisQx9pE4CFXJ3dJ99A'
 # tdex = TdexApi()
 # # tdex.open_order(3880, 1, const.BUY)
 # tdex.get_user_position()
