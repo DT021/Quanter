@@ -31,9 +31,12 @@ def get_bn_url():
 def get_quote_1():
     try:
         sell_1_price = float(site.find_element_by_xpath(
-            '/html/body/div[1]/div/main/div[2]/div/div/div[1]/div[1]/div[2]/div[1]/div[2]/div[2]/div/div[1]/div/div[2]/div/div[19]/div[2]/span').text)
-        buy_1_price = float(site.find_element_by_xpath(
-            '/html/body/div[1]/div/main/div[2]/div/div/div[1]/div[1]/div[2]/div[1]/div[4]/div[2]/div/div[1]/div/div/div/div[1]/div[2]/span').text)
+            '//*[@id="__next"]/div/main/div[2]/div/div/div[1]/div[1]/div[1]/div[2]/div/div[1]/div[2]/span[1]').text)
+        buy_1_price = sell_1_price
+        # sell_1_price = float(site.find_element_by_xpath(
+        #     '/html/body/div[1]/div/main/div[2]/div/div/div[1]/div[1]/div[2]/div[1]/div[2]/div[2]/div/div[1]/div/div[2]/div/div[19]/div[2]/span').text)
+        # buy_1_price = float(site.find_element_by_xpath(
+        #     '/html/body/div[1]/div/main/div[2]/div/div/div[1]/div[1]/div[2]/div[1]/div[4]/div[2]/div/div[1]/div/div/div/div[1]/div[2]/span').text)
         return sell_1_price, buy_1_price
     except Exception:
         return -1, -1
