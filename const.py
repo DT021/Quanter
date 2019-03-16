@@ -31,6 +31,7 @@ COMPARE_WITH_TICK2 = 'tick2'
 WS_SOURCE_BITMEX = 'bitmex'
 WS_SOURCE_HUOBI = 'huobi'
 UI_SOURCE_BINANCE = 'binance_ui'
+WS_SOURCE_BINANCE = 'binance_ws'
 
 
 class Command(object):

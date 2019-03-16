@@ -70,11 +70,14 @@ class OldStrategy(AbsStrategy):
             result = True
         return result
 
-    def on_price_change(self, sell_price, buy_price):
+    def on_price_change(self, sell_price, buy_price, ws_buy_1, ws_sell_1):
         if variable.THRESHOLD < 0 or variable.CLOSE_THRESHOLD < 0:
             print('threshold need init')
             return
 
-        self.ws_sell_1_price, self.ws_buy_1_price = ws_data.get_source().get_compare_quote_1()
+        if variable.WS_SOURCE == const.UI_SOURCE_BINANCE:
+            self.ws_sell_1_price, self.ws_buy_1_price = ws_sell_1, ws_buy_1
+        else:
+            self.ws_sell_1_price, self.ws_buy_1_price = ws_data.get_source().get_compare_quote_1()
         if not self.check_need_open(sell_price, buy_price):
             self.check_need_close()

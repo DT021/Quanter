@@ -23,7 +23,7 @@ def get_strategy():
         return
 
 
-def receive_price_change(buy_2_price, sell_2_price):
+def receive_price_change(buy_2_price, sell_2_price, ws_buy_1, ws_sell_1):
     strategy = get_strategy()
     if strategy is not None:
-        strategy.on_price_change(sell_2_price, buy_2_price)
+        strategy.on_price_change(sell_2_price, buy_2_price, ws_buy_1, ws_sell_1)
