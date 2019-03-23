@@ -49,7 +49,7 @@ def start_monitor():
         data_time = time.time() - start_time - ui_time
         if temp_ws_sell_1 != ws_sell_1 or temp_ws_buy_1 != ws_buy_1 \
                 or temp_buy_price != buy_price or temp_sell_price != sell_price:
-            strategy.receive_price_change(buy_price, sell_price)
+            strategy.receive_price_change(buy_price, sell_price, ws_buy_1, ws_sell_1)
             print(util.get_print_datetime(), 'ws:'+str([ws_buy_1, ws_sell_1]),
                   '买卖'+str(which), str([buy_price, sell_price]), position.get_target_position().value(),
                   '耗时:', int((time.time() - start_time)*1000),

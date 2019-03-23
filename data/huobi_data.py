@@ -65,7 +65,7 @@ def handle_data(result):
 def open_thread():
     global last_price, retry_count
     try:
-        ticker = util.get_huobi_symbol(variable.CURRENT_ID)
+        ticker = util.get_huobi_binance_symbol(variable.CURRENT_ID)
         if ticker == '':
             print('can not find contract id')
             return

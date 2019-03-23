@@ -1,6 +1,7 @@
 import data.huobi_data as huobi
 import data.bitmex_data as bitmex
 import data.binance_ui_data as binance_ui
+import data.binance_data as binance
 import variable, const
 
 
@@ -11,3 +12,5 @@ def get_source():
         return huobi
     elif variable.WS_SOURCE == const.UI_SOURCE_BINANCE:
         return binance_ui
+    elif variable.WS_SOURCE == const.WS_SOURCE_BINANCE:
+        return binance

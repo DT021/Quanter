@@ -47,7 +47,7 @@ def get_common_symbol(_id):
         return ''
 
 
-def get_huobi_symbol(_id):
+def get_huobi_binance_symbol(_id):
     if _id == const.BTC or _id == const.BTC_REVERSE:
         return 'btcusdt'
     elif _id == const.ETH or _id == const.ETH_REVERSE:

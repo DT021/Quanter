@@ -32,10 +32,21 @@ def send_post_request(url, data, time_stamp):
     return requests.post(url, headers=get_header(time_stamp), data=data)
 
 
+def get_leverage():
+    if variable.CURRENT_ID == const.BTC or variable.CURRENT_ID == const.BTC_REVERSE \
+            or variable.CURRENT_ID == const.ETH or variable.CURRENT_ID == const.ETH_REVERSE:
+        return 100
+    elif variable.CURRENT_ID == const.ETC:
+        return 20
+    else:
+        return 50
+
+
 class BbxApi(AbsApi):
     def get_user_position(self):
         url = USER_POSITION + '?contractID=' + str(variable.CURRENT_ID) + '&status=3'
         response = requests.get(url, headers=get_header(time.time())).json()
+        print('position response: ', response)
         if response['errno'] == 'OK':
             position_result = Position()
             data = response['data']
@@ -60,7 +71,7 @@ class BbxApi(AbsApi):
             "category": 1,
             "way": 1 if side == const.BUY else 4,
             "open_type": 1,
-            "leverage": 100,
+            "leverage": get_leverage(),
             "price": price,
             "vol": amount,
             "nonce": int(time_stamp)
