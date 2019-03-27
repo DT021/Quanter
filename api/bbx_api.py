@@ -43,6 +43,12 @@ def get_leverage():
 
 
 class BbxApi(AbsApi):
+
+    def double_check_position(self):
+        time.sleep(1)
+        user_position.set_target_position(self.get_user_position())
+        print('Double check', user_position.get_target_position().value())
+
     def get_user_position(self):
         url = USER_POSITION + '?contractID=' + str(variable.CURRENT_ID) + '&status=3'
         response = requests.get(url, headers=get_header(time.time())).json()
@@ -77,13 +83,14 @@ class BbxApi(AbsApi):
             "nonce": int(time_stamp)
         }
         response = send_post_request(SUBMIT_ORDER, json.dumps(body), time_stamp).json()
-        time.sleep(0.5)
+        time.sleep(0.3)
         user_position.set_target_position(self.get_user_position())
         print('After open', user_position.get_target_position().value())
         if response['message'] == 'Success':
             data = response['data']
             order_id = data['order_id']
             self.cancel_order(order_id)
+        self.double_check_position()
 
     def open_order_async(self, price, amount, side):
         print('************************** Open ', side, price, '**************************')
@@ -101,13 +108,14 @@ class BbxApi(AbsApi):
             "nonce": int(time_stamp)
         }
         response = send_post_request(SUBMIT_ORDER, json.dumps(body), time_stamp).json()
-        time.sleep(0.5)
+        time.sleep(0.3)
         if response['message'] == 'Success':
             data = response['data']
             order_id = data['order_id']
             self.cancel_order(order_id)
         user_position.set_target_position(self.get_user_position())
         print('After close', user_position.get_target_position().value())
+        self.double_check_position()
 
     def close_order_async(self, price, amount, side, _id):
         print('************************** Close ', price, amount, '**************************')

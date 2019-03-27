@@ -64,6 +64,14 @@ class BybitApi(AbsApi):
     def __init__(self):
         self.symbol = util.get_common_symbol(variable.CURRENT_ID)
 
+    def double_check(self):
+        time.sleep(1)
+        user_position.set_target_position(self.get_user_position())
+        print('Double check', user_position.get_target_position().value())
+
+    def double_check_position(self):
+        threading.Thread(target=self.double_check).start()
+
     def open_order_async(self, price, amount, side):
         print('************************** Open ', side, price, '**************************')
         threading.Thread(target=self.open_order, args=(price, amount, side)).start()
@@ -78,9 +86,10 @@ class BybitApi(AbsApi):
             'time_in_force': 'ImmediateOrCancel'
         }
         do_api_request(const.POST, ORDER_URL, content_json)
-        time.sleep(0.5)
+        time.sleep(0.3)
         user_position.set_target_position(self.get_user_position())
         print('After open', user_position.get_target_position().value())
+        self.double_check_position()
 
     def close_order_async(self, price, amount, side, _id=None):
         print('************************** Close ', price, amount, '**************************')
@@ -96,9 +105,10 @@ class BybitApi(AbsApi):
             'time_in_force': 'ImmediateOrCancel'
         }
         do_api_request(const.POST, ORDER_URL, content_json)
-        time.sleep(0.5)
+        time.sleep(0.3)
         user_position.set_target_position(self.get_user_position())
         print('After close', user_position.get_target_position().value())
+        self.double_check_position()
 
     def get_user_position(self):
         content_json = {

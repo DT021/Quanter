@@ -54,6 +54,10 @@ class OldStrategy(AbsStrategy):
         threshold = variable.THRESHOLD
         if variable.COMPARE_WITH == const.COMPARE_WITH_TICK2:
             threshold = threshold - price_step
+        if self.ws_sell_1_price - sell_price >= threshold and buy_price - self.ws_buy_1_price >= threshold:
+            print('bitmex data is not stable')
+            return result
+
         if self.ws_sell_1_price - sell_price >= threshold and position.side != const.SELL:
             next_sell_price = ui_data.get_sell_price(2 if variable.COMPARE_WITH == const.COMPARE_WITH_TICK1 else 3)
             if next_sell_price > 0 and self.ws_sell_1_price - next_sell_price >= threshold:
