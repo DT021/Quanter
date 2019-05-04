@@ -14,8 +14,17 @@ class DeribitApi(AbsApi):
     def __init__(self):
         self.client = RestClient(variable.DB_API_KEY, variable.DB_SECRET)
 
+    def double_check(self):
+        time.sleep(1)
+        user_position.set_target_position(self.get_user_position())
+        print('Double check', user_position.get_target_position().value())
+
+    def double_check_position(self):
+        threading.Thread(target=self.double_check).start()
+
     def get_user_position(self):
         response = self.client.positions()
+        print(response)
         position_result = Position()
         for position in response:
             position_result.average_price = position['averagePrice']
@@ -29,22 +38,28 @@ class DeribitApi(AbsApi):
         threading.Thread(target=self.open_order, args=(price, amount, side)).start()
 
     def open_order(self, price, amount, side):
-        self.client.buy('BTC-PERPETUAL', amount, price)
-        time.sleep(0.1)
+        if side == const.BUY:
+            self.client.buy('ETH-PERPETUAL', amount, price)
+        else:
+            self.client.sell('ETH-PERPETUAL', amount, price)
+        time.sleep(0.2)
         user_position.set_target_position(self.get_user_position())
-        self.cancel_all_order()
+        print('After open', user_position.get_target_position().value())
+        self.double_check_position()
+
+    def close_order_async(self, price, amount, side, _id=None):
+        print('************************** Close ', price, amount, '**************************')
+        self.close_order(price, amount, side, _id)
 
     def close_order(self, price, amount, side, _id=None):
-        self.client.sell('BTC-PERPETUAL', amount, price)
-        time.sleep(0.1)
+        if side == const.BUY:
+            self.client.buy('ETH-PERPETUAL', amount, price)
+        else:
+            self.client.sell('ETH-PERPETUAL', amount, price)
+        time.sleep(0.2)
         user_position.set_target_position(self.get_user_position())
-        self.cancel_all_order()
+        print('After close', user_position.get_target_position().value())
+        self.double_check_position()
 
     def cancel_all_order(self):
         return self.client.cancelall()
-
-
-# variable.DB_API_KEY = '5SFJJZNaZVbeE'
-# variable.DB_SECRET = 'PZ45FI47HLEVJGNIH5M5IKNTUHKF5ZFF'
-# db = DeribitApi()
-# db.open_order(3950, 1, const.BUY)
