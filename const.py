@@ -25,9 +25,6 @@ STRATEGY_TEMP_BIEX = 'temp_biex_strategy'
 STRATEGY_OLD = 'old_strategy'
 STRATEGY_DB_HEDGE = 'db_hedge_strategy'
 
-COMPARE_WITH_TICK1 = 'tick1'
-COMPARE_WITH_TICK2 = 'tick2'
-
 WS_SOURCE_BITMEX = 'bitmex'
 WS_SOURCE_HUOBI = 'huobi'
 UI_SOURCE_BINANCE = 'binance_ui'

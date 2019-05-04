@@ -34,10 +34,7 @@ def start_monitor():
             time.sleep(3)
             continue
         start_time = time.time()
-        if variable.COMPARE_WITH == const.COMPARE_WITH_TICK1:
-            which = 1
-        else:
-            which = 2
+        which = variable.COMPARE_WITH
         buy_price = ui.get_buy_price(which)
         sell_price = ui.get_sell_price(which)
         if buy_price < 0 or sell_price < 0 or buy_price > sell_price:
