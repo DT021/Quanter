@@ -170,7 +170,7 @@ def open_bitmex():
             print('can not find contract id')
             return
         ws = create_connection('wss://www.bitmex.com/realtime?subscribe=orderBookL2_25:'+ticker+',trade:'+ticker)
-        while ws.connected and is_alive:
+        while ws.connected:
             result = ws.recv()
             result = json.loads(result)
             if 'data' not in result:
@@ -180,17 +180,20 @@ def open_bitmex():
                 handle_trade_data(result)
             elif table == 'orderBookL2_25':
                 handle_order_data(result)
+        last_price = 0
         ws.close()
         print('bitmex thread stop')
-        last_price = -1
+        start()
     except Exception as e:
-        traceback.print_exc()
-        last_price = -1
-        wechat.send_message(str(e))
+        last_price = 0
+        start()
 
 
 def start():
+    print('open thread')
+    order_list.clear()
     threading.Thread(target=open_bitmex).start()
+    print('thread run done')
 
 
 # open_bitmex()
