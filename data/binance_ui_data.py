@@ -28,6 +28,10 @@ def get_bn_url():
         return 'https://www.binance.co/en/trade/BCHABC_USDT'
 
 
+def get_last_price():
+    return last_price
+
+
 def get_quote_1():
     try:
         sell_1_price = float(site.find_element_by_xpath(

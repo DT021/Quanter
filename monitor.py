@@ -25,7 +25,7 @@ def start_monitor():
     temp_buy_price = 0
     temp_sell_price = 0
     while True:
-        last_price = ws_data.get_source().last_price
+        last_price = ws_data.get_source().get_last_price()
         if last_price < 0:
             wechat.send_message('ws掉线了')
             break
@@ -40,10 +40,10 @@ def start_monitor():
             which = 2
         buy_price = ui.get_buy_price(which)
         sell_price = ui.get_sell_price(which)
-        if buy_price < 0 or sell_price < 0:
+        if buy_price < 0 or sell_price < 0 or buy_price > sell_price:
             continue
         ws_sell_1, ws_buy_1 = ws_data.get_source().get_compare_quote_1()
-        if ws_buy_1 < 0 or ws_sell_1 < 0:
+        if ws_buy_1 < 0 or ws_sell_1 < 0 or ws_buy_1 > ws_sell_1:
             continue
         ui_time = time.time() - start_time
         data_time = time.time() - start_time - ui_time

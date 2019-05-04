@@ -32,6 +32,7 @@ WS_SOURCE_BITMEX = 'bitmex'
 WS_SOURCE_HUOBI = 'huobi'
 UI_SOURCE_BINANCE = 'binance_ui'
 WS_SOURCE_BINANCE = 'binance_ws'
+WS_SOURCE_OKEX = 'okex_ws'
 
 
 class Command(object):

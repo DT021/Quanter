@@ -58,14 +58,14 @@ class OldStrategy(AbsStrategy):
             print('bitmex data is not stable')
             return result
 
-        if self.ws_sell_1_price - sell_price >= threshold and position.side != const.SELL:
+        if self.ws_sell_1_price - sell_price >= threshold:
             next_sell_price = ui_data.get_sell_price(2 if variable.COMPARE_WITH == const.COMPARE_WITH_TICK1 else 3)
             if next_sell_price > 0 and self.ws_sell_1_price - next_sell_price >= threshold:
                 api.get_site_api().open_order_async(next_sell_price, variable.MAX_AMOUNT, const.BUY)
             else:
                 api.get_site_api().open_order_async(sell_price, variable.MAX_AMOUNT, const.BUY)
             result = True
-        elif buy_price - self.ws_buy_1_price >= threshold and position.side != const.BUY:
+        elif buy_price - self.ws_buy_1_price >= threshold:
             next_buy_price = ui_data.get_buy_price(2 if variable.COMPARE_WITH == const.COMPARE_WITH_TICK1 else 3)
             if next_buy_price > 0 and next_buy_price - self.ws_buy_1_price >= threshold:
                 api.get_site_api().open_order_async(next_buy_price, variable.MAX_AMOUNT, const.SELL)

@@ -18,6 +18,10 @@ sell_1_list = []
 LIST_SIZE = 5
 
 
+def get_last_price():
+    return last_price
+
+
 def get_quote_1():
     return sell_1_price, buy_1_price
 
@@ -61,7 +65,7 @@ def process_message(msg):
         #     buy_1_list.pop()
         # if len(sell_1_list) > LIST_SIZE:
         #     sell_1_list.pop()
-        print(util.get_print_datetime(), sell_1_price, buy_1_price)
+        # print('BINANCE --- ', util.get_print_datetime(), sell_1_price, buy_1_price)
         # LOCK.release()
 
 

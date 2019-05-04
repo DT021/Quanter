@@ -47,6 +47,17 @@ def get_common_symbol(_id):
         return ''
 
 
+def get_okex_symbol(_id):
+    if _id == const.BTC or _id == const.BTC_REVERSE:
+        return 'BTC-USD'
+    elif _id == const.ETH or _id == const.ETH_REVERSE:
+        return 'ETH-USD'
+    elif _id == const.EOS or _id == const.EOS_REVERSE:
+        return 'EOS-USD'
+    else:
+        return ''
+
+
 def get_huobi_binance_symbol(_id):
     if _id == const.BTC or _id == const.BTC_REVERSE:
         return 'btcusdt'
@@ -54,6 +65,8 @@ def get_huobi_binance_symbol(_id):
         return 'ethusdt'
     elif _id == const.EOS or _id == const.EOS_REVERSE:
         return 'eosusdt'
+    elif _id == const.ETC:
+        return 'etcusdt'
     else:
         return ''
 

@@ -1,5 +1,6 @@
 from websocket import create_connection
 import gzip
+import zlib
 import time
 import json
 import traceback
@@ -34,66 +35,69 @@ def get_compare_quote_1():
 
 
 def get_sell_1_list():
-    LOCK.acquire()
-    list_copy = copy.deepcopy(sell_1_list)
-    LOCK.release()
-    return list_copy
+    # LOCK.acquire()
+    # list_copy = copy.deepcopy(sell_1_list)
+    # LOCK.release()
+    # return list_copy
+    return []
 
 
 def get_buy_1_list():
-    LOCK.acquire()
-    list_copy = copy.deepcopy(buy_1_list)
-    LOCK.release()
-    return list_copy
+    # LOCK.acquire()
+    # list_copy = copy.deepcopy(buy_1_list)
+    # LOCK.release()
+    # return list_copy
+    return []
 
 
 def handle_data(result):
-    LOCK.acquire()
+    global last_price
+    last_price = 1
+    # LOCK.acquire()
     global buy_1_price, sell_1_price
-    tick = result['tick']
-    bids = tick['bids']
-    asks = tick['asks']
-    buy_1 = bids[0]
-    sell_1 = asks[0]
-    buy_1_price = buy_1[0]
-    sell_1_price = sell_1[0]
-    buy_1_list.insert(0, buy_1_price)
-    sell_1_list.insert(0, sell_1_price)
-    if len(buy_1_list) > LIST_SIZE:
-        buy_1_list.pop()
-    if len(sell_1_list) > LIST_SIZE:
-        sell_1_list.pop()
-    LOCK.release()
+    data = result['data']
+    price_json = data[0]
+    price = price_json['last']
+    buy_1_price = float(price)
+    sell_1_price = float(price)
+    # buy_1_list.insert(0, buy_1_price)
+    # sell_1_list.insert(0, sell_1_price)
+    # if len(buy_1_list) > LIST_SIZE:
+    #     buy_1_list.pop()
+    # if len(sell_1_list) > LIST_SIZE:
+    #     sell_1_list.pop()
+    # print('OKEX --- ', util.get_print_datetime(), sell_1_price, buy_1_price)
+
+
+def inflate(data):
+    decompress = zlib.decompressobj(
+            -zlib.MAX_WBITS  # see above
+    )
+    inflated = decompress.decompress(data)
+    inflated += decompress.flush()
+    return bytes.decode(inflated)
 
 
 def open_thread():
     global last_price, retry_count
     try:
-        ticker = util.get_huobi_binance_symbol(variable.CURRENT_ID)
+        ticker = util.get_okex_symbol(const.BTC)
         if ticker == '':
             print('can not find contract id')
             return
-        ws = create_connection("wss://api.huobi.pro/ws")
-        trade_str = {"sub": "market."+ticker+".depth.step0"}
+        ws = create_connection("wss://real.okex.com:10442/ws/v3")
+        trade_str = {"op": "subscribe", "args": ["index/ticker:" + ticker]}
         ws.send(json.dumps(trade_str))
-        count = 0
         while ws.connected:
             retry_count = 0
             compress_data = ws.recv()
-            result = gzip.decompress(compress_data).decode('utf-8')
-            if result[:7] == '{"ping"':
-                ts = result[8:21]
-                pong = '{"pong":' + ts + '}'
-                ws.send(pong)
-                print('huobi send pong:', count)
-                count = 0
-            elif 'tick' in result:
-                count += 1
+            result = inflate(compress_data)
+            if 'table' in result:
                 result = json.loads(result)
                 last_price = 1
                 handle_data(result)
         ws.close()
-        print('huobi thread stop')
+        print('okex thread stop')
         last_price = 0
         if retry_count <= MAX_TRY_COUNT:
             retry_count += 1
@@ -114,4 +118,5 @@ def start():
     threading.Thread(target=open_thread).start()
 
 
+# variable.CURRENT_ID = const.EOS_REVERSE
 # open_thread()

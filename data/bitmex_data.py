@@ -17,6 +17,10 @@ sell_1_list = []
 LIST_SIZE = 5
 
 
+def get_last_price():
+    return last_price
+
+
 def get_quote_1():
     LOCK.acquire()
     order_copy = copy.deepcopy(order_list)
