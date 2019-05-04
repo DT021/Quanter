@@ -82,6 +82,12 @@ class Tdex(object):
         res = self.requestApi(input, path, type)
         return res
 
+    def futuresScheme(self, data={}, type='get'):
+        input = json.dumps(data)
+        path = '/futures/scheme'
+        res = self.requestApi(input, path, type)
+        return res
+
 
 def get_tdex_cid():
     return 1
@@ -92,22 +98,23 @@ class TdexApi(AbsApi):
 
     def __init__(self):
         self.client = Tdex()
+        options = {
+                "shared": False,
+                "merged": True
+        }
+        set_data = {
+            "cid": get_tdex_cid(),
+            "options": options
+        }
+        get_data = {
+            "cid": get_tdex_cid(),
+        }
+        print(self.client.futuresScheme(data=set_data, type='set'))
+        print(self.client.futuresScheme(data=get_data))
 
     def get_user_position(self):
         response = self.client.futuresGetPosition()
-        if response['status'] == 0:
-            position_result = Position()
-            data = response['data']
-            positions = data['list']
-            for p in positions:
-                position_result.amount = int(hold_vol) - int(freeze_vol)
-                _type = p['position_type']
-                position_result.side = const.BUY if _type == 1 else const.SELL
-                position_result.position_id = p['position_id']
-                position_result.average_price = float(p['hold_avg_price'])
-                break
-            return position_result
-        print('********************get position failed', response)
+        print(response)
         return None
 
     def open_order_async(self, price, amount, side):
@@ -119,9 +126,13 @@ class TdexApi(AbsApi):
             "cid": get_tdex_cid(),
             "side": 0 if side == const.BUY else 1,
             "scale": 20,
-            "volume": int(amount)
+            "volume": int(amount),
+            "price": price
         }
         print(self.client.futuresOpen(data))
+
+    def merge_order(self):
+        pass
 
     def close_order(self, price, amount, side, _id=None):
         self.client.sell('BTC-PERPETUAL', amount, price)
@@ -132,6 +143,7 @@ class TdexApi(AbsApi):
     def cancel_all_order(self):
         return self.client.cancelall()
 
+
 # tdex = TdexApi()
-# # tdex.open_order(3880, 1, const.BUY)
+# tdex.open_order(3960, 1, const.BUY)
 # tdex.get_user_position()
