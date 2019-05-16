@@ -14,6 +14,8 @@ def init(browser):
         site = BiexUiImpl(browser)
     elif variable.TARGET_SITE == const.BYBIT:
         site = BybitUiImpl(browser)
+    elif variable.TARGET_SITE == const.BFX:
+        site = BFXUiImpl(browser)
 
 
 def get_buy_price(which):
@@ -187,3 +189,29 @@ class BybitUiImpl(AbsUiData):
             which = str(which)
             return self.browser.find_element_by_xpath(
                 '//*[@id="app"]/div[2]/div/div/div[1]/div/div[2]/div/div/div[2]/div/div[2]/div[3]/div['+which+']/div[2]/div')
+
+
+class BFXUiImpl(AbsUiData):
+
+    def find_element_by_command(self, command, which=None):
+        if command == Command.SELL_PRICE:
+            which = 21 - which
+            which = str(which)
+            return self.browser.find_element_by_xpath(
+                '//*[@id="sellTbody"]/tr['+which+']/td[1]/span')
+
+        elif command == Command.SELL_AMOUNT:
+            which = 21 - which
+            which = str(which)
+            return self.browser.find_element_by_xpath(
+                '//*[@id="sellTbody"]/tr['+which+']/td[2]')
+
+        elif command == Command.BUY_PRICE:
+            which = str(which)
+            return self.browser.find_element_by_xpath(
+                '//*[@id="buyTbody"]/tr['+which+']/td[1]/span')
+
+        elif command == Command.BUY_AMOUNT:
+            which = str(which)
+            return self.browser.find_element_by_xpath(
+                '//*[@id="buyTbody"]/tr['+which+']/td[2]')

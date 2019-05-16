@@ -40,6 +40,10 @@ BY_SECRET = ''
 TDEX_API_KEY = ''
 TDEX_SECRET = ''
 
+# tdex required
+BFX_API_KEY = ''
+BFX_SECRET = ''
+
 WS_SOURCE = ''
 COMPARE_WITH = 2
 PRICE_STEP = -1

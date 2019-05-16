@@ -8,6 +8,7 @@ XRP = 17
 ETC = 13
 LTC = 14
 BCH = 15
+OKB = 100
 
 BUY = 'Buy'
 SELL = 'Sell'
@@ -20,6 +21,7 @@ DERIBIT = 'deribit'
 BIEX = 'biex'
 BYBIT = 'bybit'
 TDEX = 'tdex'
+BFX = 'bfx'
 
 STRATEGY_TEMP_BIEX = 'temp_biex_strategy'
 STRATEGY_OLD = 'old_strategy'

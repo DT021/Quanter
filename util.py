@@ -47,13 +47,24 @@ def get_common_symbol(_id):
         return ''
 
 
+def get_bfx_symbol(_id):
+    if _id == const.OKB:
+        return 'okb'
+    elif _id == const.BTC or _id == const.BTC_REVERSE:
+        return 'btc'
+    else:
+        return ''
+
+
 def get_okex_symbol(_id):
     if _id == const.BTC or _id == const.BTC_REVERSE:
-        return 'BTC-USD'
+        return 'BTC-USDT'
     elif _id == const.ETH or _id == const.ETH_REVERSE:
-        return 'ETH-USD'
+        return 'ETH-USDT'
     elif _id == const.EOS or _id == const.EOS_REVERSE:
-        return 'EOS-USD'
+        return 'EOS-USDT'
+    elif _id == const.OKB:
+        return 'OKB-USDT'
     else:
         return ''
 
@@ -82,3 +93,5 @@ def get_target_site_url(site, _id):
         return 'https://www.bybit.com/app/exchange/' + get_common_symbol(_id)
     elif site == const.TDEX:
         return 'https://www.tdex.com/trade/BTCUSD'
+    elif site == const.BFX:
+        return 'https://www.bfx.nu/trade/trade.do?transactionType=12'
