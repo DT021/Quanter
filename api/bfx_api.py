@@ -88,7 +88,9 @@ class BFXApi(AbsApi):
             'multiple': 20
         }
         result = do_api_request(const.POST, ORDER_URL, content_json)
-        order_id = result['data']
+        order_id = result['data'] if 'data' in result else None
+        if order_id is None:
+            return
         time.sleep(0.8)
         threading.Thread(target=self.after_open, args=(order_id, )).start()
         # self.double_check_position()

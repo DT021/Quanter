@@ -9,6 +9,7 @@ ETC = 13
 LTC = 14
 BCH = 15
 OKB = 100
+HT = 101
 
 BUY = 'Buy'
 SELL = 'Sell'

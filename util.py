@@ -52,6 +52,8 @@ def get_bfx_symbol(_id):
         return 'okb'
     elif _id == const.BTC or _id == const.BTC_REVERSE:
         return 'btc'
+    elif _id == const.HT:
+        return 'ht'
     else:
         return ''
 
@@ -78,6 +80,8 @@ def get_huobi_binance_symbol(_id):
         return 'eosusdt'
     elif _id == const.ETC:
         return 'etcusdt'
+    elif _id == const.HT:
+        return 'htusdt'
     else:
         return ''
 
@@ -94,4 +98,4 @@ def get_target_site_url(site, _id):
     elif site == const.TDEX:
         return 'https://www.tdex.com/trade/BTCUSD'
     elif site == const.BFX:
-        return 'https://www.bfx.nu/trade/trade.do?transactionType=12'
+        return 'https://www.bfx.nu/trade/trade.do?transactionType=9'
