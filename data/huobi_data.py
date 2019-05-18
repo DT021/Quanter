@@ -34,36 +34,30 @@ def get_compare_quote_1():
 
 
 def get_sell_1_list():
-    LOCK.acquire()
-    list_copy = copy.deepcopy(sell_1_list)
-    LOCK.release()
-    return list_copy
+    # LOCK.acquire()
+    # list_copy = copy.deepcopy(sell_1_list)
+    # LOCK.release()
+    # return list_copy
+    return []
 
 
 def get_buy_1_list():
-    LOCK.acquire()
-    list_copy = copy.deepcopy(buy_1_list)
-    LOCK.release()
-    return list_copy
+    # LOCK.acquire()
+    # list_copy = copy.deepcopy(buy_1_list)
+    # LOCK.release()
+    # return list_copy
+    return []
 
 
 def handle_data(result):
-    LOCK.acquire()
     global buy_1_price, sell_1_price
     tick = result['tick']
-    bids = tick['bids']
-    asks = tick['asks']
-    buy_1 = bids[0]
-    sell_1 = asks[0]
-    buy_1_price = buy_1[0]
-    sell_1_price = sell_1[0]
-    buy_1_list.insert(0, buy_1_price)
-    sell_1_list.insert(0, sell_1_price)
-    if len(buy_1_list) > LIST_SIZE:
-        buy_1_list.pop()
-    if len(sell_1_list) > LIST_SIZE:
-        sell_1_list.pop()
-    LOCK.release()
+    data = tick['data']
+    target = data[len(data) - 1]
+    # print(len(data), target)
+    buy_1_price = target['price']
+    sell_1_price = target['price']
+    # print(buy_1_price, sell_1_price)
 
 
 def open_thread():
@@ -74,7 +68,7 @@ def open_thread():
             print('can not find contract id')
             return
         ws = create_connection("wss://api.huobi.pro/ws")
-        trade_str = {"sub": "market."+ticker+".depth.step0"}
+        trade_str = {"sub": "market."+ticker+".trade.detail"}
         ws.send(json.dumps(trade_str))
         count = 0
         while ws.connected:
@@ -85,7 +79,7 @@ def open_thread():
                 ts = result[8:21]
                 pong = '{"pong":' + ts + '}'
                 ws.send(pong)
-                print('huobi send pong:', count)
+                # print('huobi send pong:', count)
                 count = 0
             elif 'tick' in result:
                 count += 1
@@ -114,4 +108,5 @@ def start():
     threading.Thread(target=open_thread).start()
 
 
+# variable.CURRENT_ID = const.HT
 # open_thread()
